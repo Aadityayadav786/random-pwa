@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Random Fun Page</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f8ff;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: #4b0082;
+    }
+    #quote {
+      margin: 20px auto;
+      font-size: 1.5rem;
+      color: #333;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #4b0082;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #installBtn {
+      margin-top: 30px;
+      background-color: #00b894;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 Welcome to Random Fun Page!</h1>
+  <p id="quote">Click the button for a random quote!</p>
+  <button onclick="showQuote()">Get Random Quote</button>
+  <br />
+  <button id="installBtn" style="display:none;">📲 Download App</button>
+
+  <script>
+    const quotes = [
+      "Life is short, smile while you still have teeth 😁",
+      "Why don’t scientists trust atoms? Because they make up everything!",
+      "Do not take life too seriously. You will never get out of it alive.",
+      "If you think nobody cares if you’re alive, try missing a couple of payments.",
+      "I'm not lazy, I'm on energy-saving mode."
+    ];
+
+    function showQuote() {
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById("quote").innerText = randomQuote;
+    }
+
+    // Install button logic
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-block';
+
+      installBtn.addEventListener('click', () => {
+        installBtn.style.display = 'none';
+        deferredPrompt.prompt();
+
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          deferredPrompt = null;
+        });
+      });
+    });
+
+    // Register service worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js")
+        .then(() => console.log("Service Worker Registered"));
+    }
+  </script>
+</body>
+</html>
